@@ -1,26 +1,57 @@
 const fs = require("fs");
 
-// gets an array of strings, each that represent a user that is seen in all files 
-function findUserIntersection(allFileArr) {
+
+
+
+async function findUserIntersection(allFileArr, headerArr) {
 
     // reduces 2d array into array of strings representinng intersecting users
     // init value is the last elem of input arr, deduplicated
+    let result = await Promise.all(allFileArr.map(x => readCsvFile(x, headerArr)))
 
-    let init = allFileArr.pop()
-    init = init.filter((x, i) => init.indexOf(x) === i)
-    let intersection = allFileArr.reduce((acc, b) => acc.filter(x => b.includes(x)), init)
-    console.log(intersection)
+    let init = result.pop()
+    let intersection = result.reduce((acc, b) => {
+        //start of what to do with a set
+        b.forEach(x => {
+            // start of each line in acc set
+            if (!acc.has(x)) {
+                b.delete(x)
+            }
+            // end of each line in set
+        })
+        return b
+        //end of what to do with the set
+    }, init)
 
-    // makes each string element into an array 
-    intersection = intersection.map(x => x.split(','))
+    // let customerObj = {}
+    // intersection.forEach(x=>{
+    //   console.log('x', x)
+    // })
 
-    // filters to remove any invalid users (e.g [',,18,',]) 
-    intersection = intersection.filter(x => x.every(x => !!x === true))
-    console.log(intersection)
 
-    // makes user object for each item returns them as an array
-    return intersection.map(x => ({ 'First Name': x[0], 'Last Name': x[1], 'Age': Number(x[2]), 'State': x[3] }))
+
+    return [...intersection].map(x => {
+        let tempArr = x.split(',')
+        let customerObj = {}
+        tempArr.forEach((y, i) => {
+            i === indexOfAge ? customerObj[headers[i]] = parseInt(y) : customerObj[headers[i]] = y
+        })
+        return customerObj
+    })
 
 }
+
+(async ([allFileArr], headers) => {
+    let answer = await findUserIntersection([allFileArr], headers)
+    console.log("this is my answer:", answer)
+
+})([...allFileArr], headers);
+
+// (async () => {
+//     let answer = await findUserIntersection(allFileArr, headers)
+//     console.log("this is my answer:", answer)
+
+// })();
+
 
 module.exports = findUserIntersection

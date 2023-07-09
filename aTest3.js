@@ -1,15 +1,21 @@
 
 
 const fs = require("fs");
-const fsp = require('fs/promises');
-
-const { promisify } = require('util')
 const readline = require("readline");
+const path = require('path')
 
 
 
 const b1 = "Store1b.csv"
 const b2 = "Store2b.csv"
+
+
+function isCorrectFileExt(filePath, extension) {
+  return path.extname(filePath) === extension ? true : false
+}
+
+// confirm there are only csv and at least 2 files 
+
 
 // edge case: checking for valid states?
 // make sure at least 2 files are used
@@ -46,119 +52,6 @@ const b2 = "Store2b.csv"
 
 //////////////////////////////////////////////// HELPER FUNCTIONS //////////////////////////////////////////////// 
 
-// let getSize1 = function (file) {
-//   let stat = promisify(fs.stat)(file)
-//   return stat
-// }
-
-async function dothisafter(file) {
-  let stat = promisify(fs.stat)
-  let result = await stat(file).then(res => {
-    return res.size
-  }).catch(err => console.log(err))
-  return result
-}
-// let newResult = getSize1(file).then(res => {
-//   console.log(res)
-// }).catch(err => console.log(err))
-
-let final = dothisafter('jas.csv').then(res => res)
-
-console.log(final)
-
-
-
-
-
-
-
-
-// let size = getSize1('jas.csv')
-
-
-// console.log('size:', size)
-// console.log('realresult:', realResult)
-
-
-
-
-// gets file size of file
-// let realResult
-// async function getFileSize(filePath) {
-//   let result
-// let stat = util.promisify(fs.stat)
-// await stat(filePath)
-//   .then(stats => {
-//     result = stats
-
-//   })
-//   // .then(data => return data)
-//   .catch(err => console.log(err))
-// return result
-// return await util.promisify(fs.stat)(filePath)
-
-
-
-
-
-
-// let result
-// await fs.stat(filePath, (err, stats) => {
-//   if (err) {
-//     console.error(err);
-//   } else {
-//     result = stats.size
-//     console.log('result:', result)
-//   }
-
-//   // we have access to the file stats in `stats`
-// });
-// return result
-
-// }
-// const readFile = (path, opts = 'utf8') =>
-//   new Promise((resolve, reject) => {
-//     fs.readFile(path, opts, (err, data) => {
-//       if (err) reject(err)
-//       else resolve(data)
-//     })
-//   })
-
-
-
-
-
-// console.log('jas.csv size:', getFileSize('jas.csv'))
-
-
-
-
-// const stat = util.promisify(fs.stat);
-// stat('.').then((stats) => {
-//   // Do something with `stats`
-// }).catch((error) => {
-//   // Handle the error.
-// });
-
-
-
-// const readFile = (path, opts = 'utf8') =>
-//   new Promise((resolve, reject) => {
-//     fs.readFile(path, opts, (err, data) => {
-//       if (err) reject(err)
-//       else resolve(data)
-//     })
-//   })
-
-
-
-
-// function sortByFileSize(fileArr) {
-//   return fileArr.sort((a, b) => getFileSize(a) - getFileSize(b))
-// }
-
-
-
 // check if its a header
 
 function checkIfHeader(arr, headerArray) {
@@ -193,17 +86,16 @@ function hasCorrectFieldCount(arr, headerArrLength) {
 // console.log(getFileSize(b1))
 
 const headers = ["First Name", "Last Name", "Age", "State"]
-const headerCount = headers.length
 const indexOfAge = headers.indexOf("Age")
 
-function readCsvFile(filePath, headerInfo) {
+
+const readCsvFile = async (filePath, headerInfo) => new Promise((resolve, reject) => {
   let checkedForHeader = false
   let hasValidHeader = false
   let isValidfile = true
   let headerArr = [...headers]
-  let fieldCount = headerArr.length
+  const headerCount = headers.length
   let dataSet = new Set();
-
 
   const csvStream = fs.createReadStream(filePath);
   const rl = readline.createInterface({ input: csvStream })
@@ -212,10 +104,7 @@ function readCsvFile(filePath, headerInfo) {
 
   rl.on('line', (row) => {
     let isValidLine = true;
-
-
     let tempLineArr = row.split(',')
-
     // it will check for header conditions, since this starts at false it should start for the first line
 
     if (checkedForHeader === false) {
@@ -255,8 +144,6 @@ function readCsvFile(filePath, headerInfo) {
             isValidLine = false
 
           }
-
-
           // end of checking each individual object
         })
 
@@ -264,7 +151,7 @@ function readCsvFile(filePath, headerInfo) {
 
       // after doing all the checks of individual elements of the array
       if (isValidLine) {
-        console.log('tempLineArr of valid line', tempLineArr)
+        // console.log('tempLineArr of valid line', tempLineArr)
         dataSet.add(tempLineArr.join(",").toLowerCase())
       }
 
@@ -278,70 +165,67 @@ function readCsvFile(filePath, headerInfo) {
 
   })
 
+  rl.on('error', function (error) {
+    reject(error)
+  });
 
   rl.on("close", () => {
     csvStream.destroy();
-    console.log('closing:', dataSet)
+    // console.log('closing:', dataSet)
+    resolve(dataSet)
+  })
+})
+
+
+
+
+
+
+
+
+async function findUserIntersection(allFileArr, headerArr) {
+
+
+  // reduces 2d array into array of strings representinng intersecting users
+  // init value is the last elem of input arr, deduplicated
+  let result = await Promise.all(allFileArr.map(x => readCsvFile(x, headerArr)))
+
+  let init = result.pop()
+  let intersection = result.reduce((acc, b) => {
+    //start of what to do with a set
+    b.forEach(x => {
+      // start of each line in acc set
+      if (!acc.has(x)) {
+        b.delete(x)
+      }
+      // end of each line in set
+    })
+    return b
+    //end of what to do with the set
+  }, init)
+
+  // let customerObj = {}
+  // intersection.forEach(x=>{
+  //   console.log('x', x)
+  // })
+
+  return [...intersection].map(x => {
+    let tempArr = x.split(',')
+    let customerObj = {}
+    tempArr.forEach((y, i) => {
+      i === indexOfAge ? customerObj[headers[i]] = parseInt(y) : customerObj[headers[i]] = y
+    })
+    return customerObj
   })
 
 }
 
+(async () => {
+  let answer = await findUserIntersection([b1, b2], headers)
+  console.log("this is my answer:", answer)
 
-
-// console.log(readCsvFile('jas.csv', headers))
-
-
-
-
-// first sort files from smallest to largest 
-// unshift left to get the first one as the index
-// use the convert CSV functionality to get it as a set, it will be init
-
-
-//2nd file must be run through csv functionality
-// then in the first file (acc) check if its in the second file, if so remove it from first,
-// set acc to 
-
-
-
-
-// console.log(sortByFileSize([b1, b2, 'jas.csv']))
-
-
-
-
-
-
-
-
-
-
-function findUserIntersection(allFileArr) {
-
-  // reduces 2d array into array of strings representinng intersecting users
-  // init value is the last elem of input arr, deduplicated
-
-  let init = allFileArr.pop()
-  init = init.filter((x, i) => init.indexOf(x) === i)
-  let intersection = allFileArr.reduce((acc, b) => acc.filter(x => b.includes(x)), init)
-  console.log(intersection)
-
-  // makes each string element into an array 
-  intersection = intersection.map(x => x.split(','))
-
-  // filters to remove any invalid users (e.g [',,18,',]) 
-  intersection = intersection.filter(x => x.every(x => !!x === true))
-  console.log(intersection)
-
-  // makes user object for each item returns them as an array
-  return intersection.map(x => ({ 'First Name': x[0], 'Last Name': x[1], 'Age': Number(x[2]), 'State': x[3] }))
-
-}
-
-
-
-
-
+  // console.log('intersectionOfUsers:', intersectionOfUsers)
+})();
 
 
 
