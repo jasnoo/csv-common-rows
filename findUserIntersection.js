@@ -1,16 +1,31 @@
 const fs = require("fs");
+const { readCsvFile, headers, headerLength, indexOfAge } = require('./convertCSVdata')
 
 
 
+const b1 = "Store1b.csv"
+const b3 = "Store1b.html"
+const b2 = "Store2b.csv"
 
-async function findUserIntersection(allFileArr, headerArr) {
+// helper functions
 
-    // reduces 2d array into array of strings representinng intersecting users
-    // init value is the last elem of input arr, deduplicated
-    let result = await Promise.all(allFileArr.map(x => readCsvFile(x, headerArr)))
+// takes set containing strings representing users and returns an array of user objects
+function createUserObject(userSet, headerArray) {
+    return [...userSet].map(row => {
+        let tempArr = row.split(',')
+        let customerObj = {}
+        tempArr.forEach((value, i) => {
+            i === indexOfAge ? customerObj[headers[i]] = parseInt(value) : customerObj[headers[i]] = value
+        })
+        return customerObj
+    })
+}
 
-    let init = result.pop()
-    let intersection = result.reduce((acc, b) => {
+
+// used to reduce sets 
+function reduceUserSets(arrayOfUserSets) {
+    const init = arrayOfUserSets.pop()
+    return arrayOfUserSets.reduce((acc, b) => {
         //start of what to do with a set
         b.forEach(x => {
             // start of each line in acc set
@@ -22,36 +37,43 @@ async function findUserIntersection(allFileArr, headerArr) {
         return b
         //end of what to do with the set
     }, init)
-
-    // let customerObj = {}
-    // intersection.forEach(x=>{
-    //   console.log('x', x)
-    // })
+}
 
 
 
-    return [...intersection].map(x => {
-        let tempArr = x.split(',')
-        let customerObj = {}
-        tempArr.forEach((y, i) => {
-            i === indexOfAge ? customerObj[headers[i]] = parseInt(y) : customerObj[headers[i]] = y
-        })
-        return customerObj
-    })
+
+async function getIntersectionOfArr(fileArray, headerArr) {
+    // input: arary of all file paths, array of header fields expected
+
+    // creates an array of 
+    let fileDataArray = await Promise.all(fileArray.map(file => readCsvFile(file, headerArr)))
+
+    // takes an array containing a set of user promises
+    let intersection = reduceUserSets(fileDataArray)
+
+    // takes input of set containing strings representing each intersection user and outputs array of user object 
+    let final = createUserObject(intersection, headerArr)
+    return final
+    // console.log(final)
+}
+
+
+
+
+function getUserIntersection(fileArr, headerArr) {
+
+    (async () => {
+        let userInterSection = await getIntersectionOfArr(fileArr, headerArr)
+        console.log(userInterSection)
+        return userInterSection
+    })();
+
 
 }
 
-(async ([allFileArr], headers) => {
-    let answer = await findUserIntersection([allFileArr], headers)
-    console.log("this is my answer:", answer)
 
-})([...allFileArr], headers);
-
-// (async () => {
-//     let answer = await findUserIntersection(allFileArr, headers)
-//     console.log("this is my answer:", answer)
-
-// })();
+getUserIntersection([b1, b2], headers)
 
 
-module.exports = findUserIntersection
+
+module.exports = getIntersectionOfArr

@@ -10,9 +10,6 @@ const b1 = "Store1b.csv"
 const b2 = "Store2b.csv"
 
 
-function isCorrectFileExt(filePath, extension) {
-  return path.extname(filePath) === extension ? true : false
-}
 
 // confirm there are only csv and at least 2 files 
 
@@ -52,8 +49,16 @@ function isCorrectFileExt(filePath, extension) {
 
 //////////////////////////////////////////////// HELPER FUNCTIONS //////////////////////////////////////////////// 
 
-// check if its a header
 
+// check if file is CSV
+function isCorrectFileExt(filePath, extension) {
+  return path.extname(filePath) === extension ? true : false
+}
+
+
+
+
+// check if its a header
 function checkIfHeader(arr, headerArray) {
   arr.forEach((elem, i) => {
     if (!elem || (elem.trim().toLowerCase() !== headerArray[i].toLowerCase())) {
@@ -91,7 +96,6 @@ const indexOfAge = headers.indexOf("Age")
 
 const readCsvFile = async (filePath, headerInfo) => new Promise((resolve, reject) => {
   let checkedForHeader = false
-  let hasValidHeader = false
   let isValidfile = true
   let headerArr = [...headers]
   const headerCount = headers.length
@@ -99,8 +103,7 @@ const readCsvFile = async (filePath, headerInfo) => new Promise((resolve, reject
 
   const csvStream = fs.createReadStream(filePath);
   const rl = readline.createInterface({ input: csvStream })
-  let firstLine = []
-  // console.log('still running 1')
+
 
   rl.on('line', (row) => {
     let isValidLine = true;
@@ -177,55 +180,64 @@ const readCsvFile = async (filePath, headerInfo) => new Promise((resolve, reject
 })
 
 
+function allOfThis(allfiles, theHeaders) {
 
 
+  async function findUserIntersection(allFileArr, headerArr) {
 
+    // reduces 2d array into array of strings representinng intersecting users
+    // init value is the last elem of input arr, deduplicated
+    let result = await Promise.all(allFileArr.map(x => readCsvFile(x, headerArr)))
 
+    let init = result.pop()
+    let intersection = result.reduce((acc, b) => {
+      //start of what to do with a set
+      b.forEach(x => {
+        // start of each line in acc set
+        if (!acc.has(x)) {
+          b.delete(x)
+        }
+        // end of each line in set
+      })
+      return b
+      //end of what to do with the set
+    }, init)
 
+    // let customerObj = {}
+    // intersection.forEach(x=>{
+    //   console.log('x', x)
+    // })
 
-async function findUserIntersection(allFileArr, headerArr) {
-
-
-  // reduces 2d array into array of strings representinng intersecting users
-  // init value is the last elem of input arr, deduplicated
-  let result = await Promise.all(allFileArr.map(x => readCsvFile(x, headerArr)))
-
-  let init = result.pop()
-  let intersection = result.reduce((acc, b) => {
-    //start of what to do with a set
-    b.forEach(x => {
-      // start of each line in acc set
-      if (!acc.has(x)) {
-        b.delete(x)
-      }
-      // end of each line in set
+    return [...intersection].map(x => {
+      let tempArr = x.split(',')
+      let customerObj = {}
+      tempArr.forEach((y, i) => {
+        i === indexOfAge ? customerObj[headers[i]] = parseInt(y) : customerObj[headers[i]] = y
+      })
+      return customerObj
     })
-    return b
-    //end of what to do with the set
-  }, init)
 
-  // let customerObj = {}
-  // intersection.forEach(x=>{
-  //   console.log('x', x)
-  // })
+  }
 
-  return [...intersection].map(x => {
-    let tempArr = x.split(',')
-    let customerObj = {}
-    tempArr.forEach((y, i) => {
-      i === indexOfAge ? customerObj[headers[i]] = parseInt(y) : customerObj[headers[i]] = y
-    })
-    return customerObj
-  })
+
+  (async () => {
+    let answer = await findUserIntersection([...allfiles], theHeaders)
+    console.log("this is my answer:", answer)
+
+    // console.log('intersectionOfUsers:', intersectionOfUsers)
+  })();
+
 
 }
 
-(async () => {
-  let answer = await findUserIntersection([b1, b2], headers)
-  console.log("this is my answer:", answer)
+allOfThis([b1, b2], headers)
 
-  // console.log('intersectionOfUsers:', intersectionOfUsers)
-})();
+
+
+
+
+
+
 
 
 
