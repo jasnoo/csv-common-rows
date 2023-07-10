@@ -1,47 +1,43 @@
-
 const fs = require("fs");
-const readline = require("readline");
-const path = require('path')
 const { readCsvFile, headers, headerLength, indexOfAge } = require('./convertCSVdata')
+const { getIntersectionOfArr } = require('./getIntersection')
+const { isValidFileArray, totalFiles } = require('./confirmValidFiles')
+
 
 
 const b1 = "Store1b.csv"
-const b3 = "Store1b.html"
+const b3 = "Store4b.csv"
 const b2 = "Store2b.csv"
 
-const fileCount = 2
-const ext = '.csv'
+let thisAns
 
-// readCsvFile(b1, headers).then(data => console.log('thisisdata', data))
+function intersection(fileArr, headerArr) {
 
-function findIntersection(...files) {
-    // confirm there are at least 2 files 
-    if (files.length !== fileCount) return false
-
-    // confirm all files in files argument are csv
-    for (let file of [...files]) {
-        if (path.extname(file) !== ext) {
-            return false
-        }
+    if (!isValidFileArray(fileArr)) return 'Invalid File Array'
+    else {
+        (async () => {
+            let userInterSection = await getIntersectionOfArr(fileArr, headerArr).catch(err => console.log(err))
+            console.log(userInterSection)
+            return userInterSection
+        })();
     }
+
 
 }
 
-
-//////////////////////////////////////////////// HELPER FUNCTIONS START //////////////////////////////////////////////// 
-
-//////////////////////////////////////////////// HELPER FUNCTIONS END //////////////////////////////////////////////// 
+// console.log(intersection([b1, b2], headers))
 
 
 
+let answer = intersection([b1, b2], headers)
 
+setTimeout(() => {
+    console.log('i set time')
+}, 5000);
 
+setTimeout(() => {
+    console.log(answer)
 
+}, 5000);
 
-
-
-
-
-
-// console.log(findIntersection(b1, b2))
-// console.log(findIntersection(b1, b2))
+console.log(thisAns)

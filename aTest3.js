@@ -221,17 +221,17 @@ function allOfThis(allfiles, theHeaders) {
 
 
   (async () => {
-    let answer = await findUserIntersection([...allfiles], theHeaders)
-    console.log("this is my answer:", answer)
-
+    let answer = await findUserIntersection([b1, b2], headers)
+    // console.log("this is my answer:", answer)
+    return answer
     // console.log('intersectionOfUsers:', intersectionOfUsers)
   })();
 
 
 }
 
-allOfThis([b1, b2], headers)
-
+// console.log(findUserIntersection([b1, b2], headers))
+console.log(allOfThis([b1, b2], headers))
 
 
 

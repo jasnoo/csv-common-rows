@@ -14,7 +14,6 @@ function isCorrectFileExt(filePath, extension) {
 }
 
 
-
 // check if its a header
 function validateHeader(arr, headerArray) {
     if (headerArray.length !== arr.length) return false
@@ -100,9 +99,6 @@ const readCsvFile = async (filePath, headerArr) => new Promise((resolve, reject)
         }
 
         // conditions that mean the line is invalid
-
-
-
 
     })
 

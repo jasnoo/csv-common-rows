@@ -3,10 +3,6 @@ const { readCsvFile, headers, headerLength, indexOfAge } = require('./convertCSV
 
 
 
-const b1 = "Store1b.csv"
-const b3 = "Store1b.html"
-const b2 = "Store2b.csv"
-
 // helper functions
 
 // takes set containing strings representing users and returns an array of user objects
@@ -41,7 +37,6 @@ function reduceUserSets(arrayOfUserSets) {
 
 
 
-
 async function getIntersectionOfArr(fileArray, headerArr) {
     // input: arary of all file paths, array of header fields expected
 
@@ -60,20 +55,20 @@ async function getIntersectionOfArr(fileArray, headerArr) {
 
 
 
-function getUserIntersection(fileArr, headerArr) {
+// function getUserIntersection(fileArr, headerArr) {
 
-    (async () => {
-        let userInterSection = await getIntersectionOfArr(fileArr, headerArr)
-        console.log(userInterSection)
-        return userInterSection
-    })();
-
-
-}
+//     (async () => {
+//         let userInterSection = await getIntersectionOfArr(fileArr, headerArr)
+//         console.log(userInterSection)
+//         return userInterSection
+//     })();
 
 
-getUserIntersection([b1, b2], headers)
+// }
 
 
 
-module.exports = getIntersectionOfArr
+
+
+
+module.exports = { getIntersectionOfArr }
