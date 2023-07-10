@@ -7,40 +7,56 @@ const totalFiles = 2
 //// helper functions start
 
 function checkforFileArr(fileArray) {
-  if (!Array.isArray(fileArray)) throw new Error('fileArr must be an array');
+  if (!Array.isArray(fileArray)) {
+    throw new Error('File array should be an array')
+  }
   return true
 }
 
 // check that correct amount of files were passed into array argument
 function checkFileCount(fileArray, expectedCount) {
-  if (fileArray.length !== expectedCount) throw new Error(`fileArr has unexpected amount of files`)
-  return true
+  if (!Array.isArray(fileArray)) {
+    throw new Error(`File array should be an array`)
+  } else if (
+    typeof expectedCount !== 'number' ||
+    expectedCount <= 1 ||
+    (!expectedCount)
+  ) {
+    throw new Error(`Invalid expected file count`)
+  } else if (fileArray.length === 0 || fileArray.length !== expectedCount) {
+    throw new Error(`File array has unexpected amount of files`)
+  } else return true
 }
 
 // checks if each file string has .csv extension 
 function checkForCsvExt(file) {
-  if (path.extname(file) !== '.csv') {
-    throw new Error(`One or more files in fileArr is not a CSV`)
-  }
-  return true
+  // if (typeof file !== 'string') {
+  //   throw new Error(`${file} should be a string`)
+  // }
+  if (typeof file !== 'string' || path.extname(file) !== '.csv') {
+    throw new Error('File is not a CSV')
+  } else return true
 }
 
 // checks that files in array exist
-function checkForValidfile(file) {
-  if (path.extname(file) !== '.csv') {
-    throw new Error(`One or more files in fileArr is not a CSV`)
-  }
-
-  if (!fs.existsSync(file)) {
-    // throw new Error(`File not found at '${file}'`);
-    throw new Error(`File not found at '${file}'`);
-  }
+function checkFileExists(file) {
+  if (typeof file !== 'string') {
+    throw new Error('File argument should be a string')
+  } else if (!fs.existsSync(file)) {
+    throw new Error(`File does not exist`);
+  } else return true
 }
 
 // checks for duplicate files in array
 function checkForDuplicates(fileArray) {
-  const dedupedArr = fileArray.filter((file, i) => fileArray.indexOf(file) === i)
-  if (dedupedArr.length !== fileArray.length) throw new Error(`fileArr cannot have duplicate files`);
+  if (!Array.isArray(fileArray)) {
+    throw new Error(`File array should be an array`)
+  } else {
+    const dedupedArr = fileArray.filter((file, i) => fileArray.indexOf(file) === i)
+    if (dedupedArr.length !== fileArray.length) throw new Error(`File array cannot have duplicate files`);
+    return true
+  }
+
 }
 
 //// helper functions end
@@ -81,6 +97,6 @@ module.exports = {
   checkforFileArr,
   checkFileCount,
   checkForCsvExt,
-  checkForValidfile,
+  checkFileExists,
   checkForDuplicates
 }
