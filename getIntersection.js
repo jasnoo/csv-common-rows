@@ -20,6 +20,7 @@ function createUserObject(userSet, headerArray) {
 
 // used to reduce sets 
 function reduceUserSets(arrayOfUserSets) {
+    // console.log('arrayOfUserSets', arrayOfUserSets)
     const init = arrayOfUserSets.pop()
     return arrayOfUserSets.reduce((acc, b) => {
         //start of what to do with a set
@@ -42,14 +43,17 @@ async function getIntersectionOfArr(fileArray, headerArr) {
 
     // creates an array of 
     let fileDataArray = await Promise.all(fileArray.map(file => readCsvFile(file, headerArr)))
+    // console.log('fileDataArray', fileDataArray)
 
     // takes an array containing a set of user promises
     let intersection = reduceUserSets(fileDataArray)
 
+
     // takes input of set containing strings representing each intersection user and outputs array of user object 
     let final = createUserObject(intersection, headerArr)
+
+    console.log(final)
     return final
-    // console.log(final)
 }
 
 

@@ -8,45 +8,39 @@ const b2 = "Store2b.csv"
 //////////////////////////////////////////////// HELPER FUNCTIONS //////////////////////////////////////////////// 
 
 
-// check if file is CSV
-function isCorrectFileExt(filePath, extension) {
-    return path.extname(filePath) === extension ? true : false
-}
-
 
 // check if its a header
 function validateHeader(arr, headerArray) {
-    if (headerArray.length !== arr.length) return false
-    arr.forEach((elem, i) => {
-        if (!elem || (elem.trim().toLowerCase() !== headerArray[i].toLowerCase())) {
-            return false
-        }
-    })
-    return true;
+  if (headerArray.length !== arr.length) return false
+  let hasValidHeaders = true
+  arr.forEach((elem, i) => {
+    if (!elem || (elem.trim().toLowerCase() !== headerArray[i].toLowerCase())) {
+      hasValidHeaders = false
+    }
+  })
+  return hasValidHeaders;
 }
 
-// check if the row is has valid field count
-function hasCorrectFieldCount(arr, headerArrLength) {
-    return (arr.length === headerArrLength) ? true : false;
-}
 
+
+// check if each individual row has appropriate number/string data included
 function rowHasValidFields(rowArr) {
-    let isValid = true
-    rowArr.forEach((value, i) => {
-        rowArr[i] = rowArr[i].trim()
-        if (i === indexOfAge) {
-            if (!rowArr[i]) {
-                isValid = false
-            }
-            rowArr[i] = parseInt(rowArr[i], 10);
-            if (Number.isNaN(rowArr[i]) || rowArr[i] < 0) {
-                isValid = false
-            }
-        } else if (!!value === false) {
-            isValid = false
-        }
-    })
-    return isValid
+  let isValid = true
+  rowArr.forEach((value, i) => {
+    rowArr[i] = rowArr[i].trim()
+    if (i === indexOfAge) {
+      if (!rowArr[i]) {
+        isValid = false
+      }
+      rowArr[i] = parseInt(rowArr[i], 10);
+      if (Number.isNaN(rowArr[i]) || rowArr[i] < 0) {
+        isValid = false
+      }
+    } else if (!!value === false) {
+      isValid = false
+    }
+  })
+  return isValid
 }
 
 
@@ -63,6 +57,48 @@ const headerLength = headers.length
 const indexOfAge = headers.indexOf("Age")
 
 
+async function readCsvFile(filePath, headerArr) {
+  const dataSet = new Set();
+
+  return new Promise((resolve, reject) => {
+    let checkedForHeader = false
+    const csvStream = fs.createReadStream(filePath);
+    const rl = readline.createInterface({ input: csvStream })
+
+    rl.on('line', (row) => {
+
+      let tempLineArr = row.split(',')
+      // it will check for header conditions, since this starts at false it should start for the first line
+
+      if (!checkedForHeader) {
+        if (!validateHeader(tempLineArr, headerArr)) {
+          reject(new Error(`Headers are invalid for ${filePath}`))
+        }
+        checkedForHeader = true;
+      }
+      //if row has same # of fields as header and if row values are valid
+      if ((tempLineArr.length === headerLength) && (rowHasValidFields(tempLineArr))) {
+        dataSet.add(tempLineArr.join(",").toLowerCase())
+      }
+    })
+
+    rl.on('error', function (err) {
+      reject(new Error(`Someting went wrong at ${filePath}`))
+    });
+
+    rl.on("close", () => {
+      resolve(dataSet)
+    })
+  })
+}
+
+
+
+
+
+
+
+/*
 const readCsvFile = async (filePath, headerArr) => new Promise((resolve, reject) => {
     let checkedForHeader = false
     let isValidFile = true
@@ -75,6 +111,7 @@ const readCsvFile = async (filePath, headerArr) => new Promise((resolve, reject)
     rl.on('line', (row) => {
         if (!isValidFile) {
             rl.close()
+            throw `Invalid file at ${filePath}`
         } else {
             let isValidLine = true;
             let tempLineArr = row.split(',')
@@ -102,8 +139,8 @@ const readCsvFile = async (filePath, headerArr) => new Promise((resolve, reject)
 
     })
 
-    rl.on('error', function (error) {
-        reject(error)
+    rl.on('error', function (err) {
+        reject(err)
     });
 
     rl.on("close", () => {
@@ -122,6 +159,6 @@ const readCsvFile = async (filePath, headerArr) => new Promise((resolve, reject)
 
 //     // console.log('intersectionOfUsers:', intersectionOfUsers)
 // })();
-
+*/
 
 module.exports = { readCsvFile, headers, headerLength, indexOfAge }
