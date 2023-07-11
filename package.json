@@ -1,6 +1,6 @@
 {
   "scripts": {
-        "test-cache": "jest --clearCache",
+        "testc": "jest --coverage",
         "test": "jest"
     },
 

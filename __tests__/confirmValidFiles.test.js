@@ -1,6 +1,6 @@
-const { checkforFileArr, checkFileCount, checkForCsvExt, checkFileExists, checkForDuplicates } = require("../confirmValidFiles");
-
+const { checkforFileArr, checkFileCount, checkForCsvExt, checkFileExists, checkForDuplicates, isValidFileArray } = require("../confirmValidFiles");
 const fs = require('fs')
+
 jest.mock('fs');
 
 
@@ -98,7 +98,6 @@ describe('checkForDuplicates function', () => {
         const t = () => checkForDuplicates(fileArr)
         expect(t).toThrow(`File array cannot have duplicate files`)
         expect(t).not.toBe(true)
-
     })
     test('checkForDuplicates throws and error when file array is not an array', () => {
         const t = () => (checkForDuplicates('file1.csv', 'file2.csv'))
@@ -108,5 +107,57 @@ describe('checkForDuplicates function', () => {
     test('checkForDuplicates returns true when there are no duplicate strings in fileArr', () => {
         const fileArr = ['file1.csv', 'file2.csv', 'file3.csv']
         expect(checkForDuplicates(fileArr)).toBe(true)
+    })
+})
+
+
+describe('isValidFileArray function', () => {
+    beforeEach(() => {
+        fs.existsSync.mockClear()
+    })
+    test('isValidFileArray throws error when first argument is not an array', () => {
+        fs.existsSync.mockReturnValue(true)
+        const fileArr = 'file1.csv'
+        const expectedCount = 2
+        const t = () => isValidFileArray(fileArr, expectedCount)
+        expect(t).toThrow('File array should be an array')
+    })
+
+    test('isValidFileArray throws error when file array does not have expected file count', () => {
+        fs.existsSync.mockReturnValue(true)
+        const fileArr = ['file1.csv', 'file2.csv']
+        const expectedCount = 3
+        const t = () => isValidFileArray(fileArr, expectedCount)
+        expect(t).toThrow('File array has unexpected amount of files')
+    })
+
+    test('isValidFileArray throws error when fs.existsSync returns false', () => {
+        fs.existsSync.mockReturnValue(false)
+        const fileArr = ['file1.csv', 'file2.csv']
+        const expectedCount = 2
+        const t = () => isValidFileArray(fileArr, expectedCount)
+        expect(t).toThrow('File does not exist')
+    })
+
+    test('isValidFileArray throws error when a file is not csv', () => {
+        fs.existsSync.mockReturnValue(true)
+        const fileArr = ['file1.html', 'file2.csv']
+        const expectedCount = 2
+        const t = () => isValidFileArray(fileArr, expectedCount)
+        expect(t).toThrow('File is not a CSV')
+    })
+    test('isValidFileArray throws error when file array has file duplicates', () => {
+        fs.existsSync.mockReturnValue(true)
+        const fileArr = ['file1.csv', 'file1.csv']
+        const expectedCount = 2
+        const t = () => isValidFileArray(fileArr, expectedCount)
+        expect(t).toThrow('File array cannot have duplicate files')
+    })
+
+    test('isValidFileArray returns true when file array has valid files and expected count is valid', () => {
+        fs.existsSync.mockReturnValue(true)
+        const fileArr = ['file1.csv', 'file2.csv']
+        const expectedCount = 2
+        expect(isValidFileArray(fileArr, expectedCount)).toBe(true)
     })
 })

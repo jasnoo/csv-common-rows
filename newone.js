@@ -37,13 +37,14 @@ const b2 = "Store2b.csv"
 // }
 
 
-function intersection(fileArr, headerArr) {
+function intersection(fileArr, headerArr, fileCount) {
 
     try {
-        if (isValidFileArray(fileArr)) {
+        console.log('filecount in intersection:', fileCount)
+        if (isValidFileArray(fileArr, fileCount)) {
             return (async () => {
                 let userInterSection = await getIntersectionOfArr(fileArr, headerArr).catch(err => console.log(err))
-                // console.log(userInterSection)
+                console.log(userInterSection)
                 return userInterSection
             })();
         }
@@ -77,7 +78,7 @@ function intersection(fileArr, headerArr) {
 
 
 
-console.log(intersection([b1, b2], headers))
+console.log(intersection([b1, b2], headers, 2))
 // console.log(intersection(['jas.csv', 'empty.csv'], headers))
 // console.log(intersection(['./nope/nope.csv', b2], headers))// console.log(answer)
 // console.log(intersection([], headers))// console.log(answer)

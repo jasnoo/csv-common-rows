@@ -7,14 +7,18 @@ const b2 = "Store2b.csv"
 
 //////////////////////////////////////////////// HELPER FUNCTIONS //////////////////////////////////////////////// 
 
-
+// function splitRowString(rowString) {
+//   return (typeof rowString === 'string') ? rowString.split(',') : false;
+// }
 
 // check if its a header
-function validateHeader(arr, headerArray) {
-  if (headerArray.length !== arr.length) return false
+function validateHeader(rowArr, expectedHeaders) {
+  if (!rowArr || !expectedHeaders) return false
+  if (!Array.isArray(rowArr)) return false
+  if (expectedHeaders.length !== rowArr.length) return false
   let hasValidHeaders = true
-  arr.forEach((elem, i) => {
-    if (!elem || (elem.trim().toLowerCase() !== headerArray[i].toLowerCase())) {
+  rowArr.forEach((elem, i) => {
+    if (!elem || (elem.trim().toLowerCase() !== expectedHeaders[i].toLowerCase())) {
       hasValidHeaders = false
     }
   })
@@ -22,9 +26,9 @@ function validateHeader(arr, headerArray) {
 }
 
 
-
 // check if each individual row has appropriate number/string data included
-function rowHasValidFields(rowArr) {
+function rowHasValidFields(rowArr, indexOfAge) {
+  if (!rowArr || !Array.isArray(rowArr) || (typeof indexOfAge !== 'number')) return false
   let isValid = true
   rowArr.forEach((value, i) => {
     rowArr[i] = rowArr[i].trim()
@@ -77,7 +81,7 @@ async function readCsvFile(filePath, headerArr) {
         checkedForHeader = true;
       }
       //if row has same # of fields as header and if row values are valid
-      if ((tempLineArr.length === headerLength) && (rowHasValidFields(tempLineArr))) {
+      if ((tempLineArr.length === headerLength) && (rowHasValidFields(tempLineArr, indexOfAge))) {
         dataSet.add(tempLineArr.join(",").toLowerCase())
       }
     })
@@ -92,6 +96,22 @@ async function readCsvFile(filePath, headerArr) {
   })
 }
 
+
+
+
+
+
+
+module.exports = {
+  readCsvFile,
+  headers,
+  headerLength,
+  indexOfAge,
+  validateHeader,
+  rowHasValidFields,
+
+
+}
 
 
 
@@ -160,5 +180,3 @@ const readCsvFile = async (filePath, headerArr) => new Promise((resolve, reject)
 //     // console.log('intersectionOfUsers:', intersectionOfUsers)
 // })();
 */
-
-module.exports = { readCsvFile, headers, headerLength, indexOfAge }

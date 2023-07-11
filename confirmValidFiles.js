@@ -30,9 +30,6 @@ function checkFileCount(fileArray, expectedCount) {
 
 // checks if each file string has .csv extension 
 function checkForCsvExt(file) {
-  // if (typeof file !== 'string') {
-  //   throw new Error(`${file} should be a string`)
-  // }
   if (typeof file !== 'string' || path.extname(file) !== '.csv') {
     throw new Error('File is not a CSV')
   } else return true
@@ -40,7 +37,7 @@ function checkForCsvExt(file) {
 
 // checks that files in array exist
 function checkFileExists(file) {
-  if (typeof file !== 'string') {
+  if (typeof file !== 'string' || !file) {
     throw new Error('File argument should be a string')
   } else if (!fs.existsSync(file)) {
     throw new Error(`File does not exist`);
@@ -63,21 +60,19 @@ function checkForDuplicates(fileArray) {
 
 
 // checks that all files in file array are  
-function isValidFileArray(fileArr, fileCount = totalFiles) {
+function isValidFileArray(fileArr, fileCount) {
   // checks if fileArr an array
-  checkforFileArr(fileArr)
+  if (!checkforFileArr(fileArr)) return false
 
   // checks if fileArr has expected count of files
-  checkFileCount(fileArr, fileCount)
+  if (!checkFileCount(fileArr, fileCount)) return false
 
   // checks each file to confirm all are csv and are are valid existing files
   for (let file of fileArr) {
-    checkForCsvExt(file)
-    checkForValidfile(file)
+    if (!checkForCsvExt(file) || !checkFileExists(file)) return false
   }
-
   // checks if there are duplicate files within fileArr 
-  checkForDuplicates(fileArr)
+  if (!checkForDuplicates(fileArr)) return false
 
   return true
 }
@@ -100,3 +95,7 @@ module.exports = {
   checkFileExists,
   checkForDuplicates
 }
+
+
+
+
