@@ -1,10 +1,9 @@
 const fs = require('fs')
 var path = require('path')
 
+/////////// Helper functions for isValidFileArray function begin ///////////
 
-
-//// helper functions start
-
+// Checks if file array argument is an array
 function checkforFileArr(fileArray) {
   if (!Array.isArray(fileArray)) {
     throw new Error('File array should be an array')
@@ -12,7 +11,7 @@ function checkforFileArr(fileArray) {
   return true
 }
 
-// check that correct amount of files were passed into array argument
+// Checks if file array has as many files as is expected
 function checkFileCount(fileArray, expectedCount) {
   if (!Array.isArray(fileArray)) {
     throw new Error(`File array should be an array`)
@@ -27,17 +26,16 @@ function checkFileCount(fileArray, expectedCount) {
   } else return true
 }
 
-// checks if each file string has .csv extension 
+// Checks if a file argument (string) has .csv extension 
 function checkForCsvExt(file) {
   if (file === undefined) { throw new Error('File is undefined') }
   if (typeof file !== 'string' || path.extname(file) !== '.csv') {
     throw new Error('File is not a CSV')
   }
   else return true
-
 }
 
-// checks that files in array exist
+// Checks if a file argument (string) is a real file (fs.existsSync)
 function checkFileExists(file) {
   if (typeof file !== 'string' || !file) {
     throw new Error('File argument should be a string')
@@ -46,8 +44,8 @@ function checkFileExists(file) {
   } else return true
 }
 
-// checks for duplicate files in array
-function checkForDuplicates(fileArray) {
+// Checks if a file array has 
+function checkForNoDuplicates(fileArray) {
   if (!Array.isArray(fileArray)) {
     throw new Error(`File array should be an array`)
   } else {
@@ -55,33 +53,30 @@ function checkForDuplicates(fileArray) {
     if (dedupedArr.length !== fileArray.length) throw new Error(`File array cannot have duplicate files`);
     return true
   }
-
 }
 
-//// helper functions end
+/////////// Helper functions for isValidFileArray function end ///////////
 
 
-// checks that all files in file array are  
+// isValidFileArray checks for valid files before reading through them line by line
+// If a file is invalid, it will throw error in respective helper function
 function isValidFileArray(fileArr, fileCount) {
-
-
-  // checks that fileArr is an array, has expected number of files and are no duplicates
 
   // checks if fileArr an array
   checkforFileArr(fileArr)
+
   // checks if fileArr has expected count of files
   checkFileCount(fileArr, fileCount)
+
   // checks if fileArr has any duplicates count of files
-  checkForDuplicates(fileArr)
+  checkForNoDuplicates(fileArr)
 
   // checks each file to confirm all are csv and are are valid existing files
   for (let file of fileArr) {
     checkForCsvExt(file)
     checkFileExists(file)
   }
-
   return true
-
 }
 
 module.exports = {
@@ -90,7 +85,7 @@ module.exports = {
   checkFileCount,
   checkForCsvExt,
   checkFileExists,
-  checkForDuplicates
+  checkForNoDuplicates
 }
 
 

@@ -14,12 +14,8 @@ const b2 = "Store2b.csv"
 
 
 function intersection(fileArr, headerArr = expectedHeaders, fileCount = totalFiles, indexOfAge = ageIndex) {
-
     try {
-        console.log('filecount in intersection:', fileCount)
-        console.log('isValidFileArray(fileArr, fileCount)', isValidFileArray(fileArr, fileCount))
         if (isValidFileArray(fileArr, fileCount)) {
-
             return (async () => {
                 let userInterSection = await getIntersectionOfArr(fileArr, headerArr, indexOfAge).catch(err => console.log(err))
                 console.log(userInterSection)
