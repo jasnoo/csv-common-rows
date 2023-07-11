@@ -1,9 +1,6 @@
 const fs = require("fs");
 const readline = require("readline");
 
-const b1 = "Store1b.csv"
-const b2 = "Store2b.csv"
-
 
 //////////////////////////////////////////////// HELPER FUNCTIONS //////////////////////////////////////////////// 
 
@@ -56,12 +53,12 @@ function rowHasValidFields(rowArr, indexOfAge) {
 
 
 
-const headers = ["First Name", "Last Name", "Age", "State"]
-const headerLength = headers.length
-const indexOfAge = headers.indexOf("Age")
+// const headers = ["First Name", "Last Name", "Age", "State"]
+// const headerLength = headers.length
+// const indexOfAge = headers.indexOf("Age")
 
 
-async function readCsvFile(filePath, headerArr) {
+async function readCsvFile(filePath, headerArr, indexOfAge) {
   const dataSet = new Set();
 
   return new Promise((resolve, reject) => {
@@ -81,7 +78,7 @@ async function readCsvFile(filePath, headerArr) {
         checkedForHeader = true;
       }
       //if row has same # of fields as header and if row values are valid
-      if ((tempLineArr.length === headerLength) && (rowHasValidFields(tempLineArr, indexOfAge))) {
+      if ((tempLineArr.length === headerArr.length) && (rowHasValidFields(tempLineArr, indexOfAge))) {
         dataSet.add(tempLineArr.join(",").toLowerCase())
       }
     })
@@ -91,6 +88,7 @@ async function readCsvFile(filePath, headerArr) {
     });
 
     rl.on("close", () => {
+      console.log(dataSet)
       resolve(dataSet)
     })
   })
@@ -104,9 +102,6 @@ async function readCsvFile(filePath, headerArr) {
 
 module.exports = {
   readCsvFile,
-  headers,
-  headerLength,
-  indexOfAge,
   validateHeader,
   rowHasValidFields,
 

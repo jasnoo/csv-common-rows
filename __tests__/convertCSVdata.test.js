@@ -1,4 +1,6 @@
 const { readCsvFile, headers, headerLength, indexOfAge, validateHeader, rowHasValidFields } = require('../convertCSVdata')
+const fs = require("fs");
+const readline = require("readline");
 
 
 describe('validateHeader function', () => {
@@ -71,18 +73,52 @@ describe('readCsvFile', () => {
   const testHeaders = ["First Name", "Last Name", "Age", "State"]
   const ageIndex = 2
 
+  // afterEach(() => {
+  //   jest.restoreAllMocks();
+  // });
+
+
+  // test('readCsvFile correctly reads valid file and returns set of valid rows as lowercase trimmed strings', async () => {
+  //   const store = './testCSV/TestStore1.csv' // valid csv with header and both valid and invalid lines
+  //   const createReadStream = jest.spyOn(fs, 'createReadStream');
+  //   const data = await readCsvFile(store, testHeaders, ageIndex)
+  //   expect(createReadStream).toHaveBeenCalledWith(store);
+  // })
+
   test('readCsvFile correctly reads valid file and returns set of valid rows as lowercase trimmed strings', async () => {
     const store = './testCSV/TestStore1.csv' // valid csv with header and both valid and invalid lines
     const data = await readCsvFile(store, testHeaders, ageIndex)
 
     expect(data instanceof Set).toBe(true)
-    expect(data.size).toBe(2)
+    expect(data.size).toBe(3)
     expect(data.has('noah,williams,82,south carolina')).toBe(true)
     expect(data.has('Noah , Williams ,82 , South Carolina')).toBe(false)
     expect(data.has('emma,nguyen,57,kentucky')).toBe(true)
+    expect(data.has('olivia,johnson,45,utah')).toBe(true)
     expect(data.has(',nunez,,alaska')).toBe(false)
     expect(data.has(',,,')).toBe(false)
+
   })
+
+
+
+
+  // const video = require('./video');
+
+
+
+  // test('plays video', () => {
+  //   const spy = jest.spyOn(video, 'play');
+  //   const isPlaying = video.play();
+
+  //   expect(spy).toHaveBeenCalled();
+  //   expect(isPlaying).toBe(true);
+  // });
+
+
+
+
+
 
   test('readCsvFile correctly reads file with valid data when headers have leading/trailing white-space and different capitaliaiton', async () => {
     const store = './testCSV/TestStore2.csv' // valid csv, with all-caps headers and extra whitespace 
@@ -116,7 +152,10 @@ describe('readCsvFile', () => {
 
   test('readCsvFile returns empty set when file only has header without valid rows', async () => {
     const store = 'testCSV/TestStore5_onlyheader.csv' // not a real csv
-    await expect(readCsvFile(store, testHeaders, ageIndex)).rejects.toThrow(`Someting went wrong at ${store}`)
+    const data = await readCsvFile(store, testHeaders, ageIndex)
+
+    expect(data instanceof Set).toBe(true)
+    expect(data.size).toBe(0)
   })
 });
 

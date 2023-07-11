@@ -2,7 +2,6 @@ const fs = require('fs')
 var path = require('path')
 
 
-const totalFiles = 2
 
 //// helper functions start
 
@@ -30,9 +29,12 @@ function checkFileCount(fileArray, expectedCount) {
 
 // checks if each file string has .csv extension 
 function checkForCsvExt(file) {
+  if (file === undefined) { throw new Error('File is undefined') }
   if (typeof file !== 'string' || path.extname(file) !== '.csv') {
     throw new Error('File is not a CSV')
-  } else return true
+  }
+  else return true
+
 }
 
 // checks that files in array exist
@@ -61,34 +63,29 @@ function checkForDuplicates(fileArray) {
 
 // checks that all files in file array are  
 function isValidFileArray(fileArr, fileCount) {
-  // checks if fileArr an array
-  if (!checkforFileArr(fileArr)) return false
 
+
+  // checks that fileArr is an array, has expected number of files and are no duplicates
+
+  // checks if fileArr an array
+  checkforFileArr(fileArr)
   // checks if fileArr has expected count of files
-  if (!checkFileCount(fileArr, fileCount)) return false
+  checkFileCount(fileArr, fileCount)
+  // checks if fileArr has any duplicates count of files
+  checkForDuplicates(fileArr)
 
   // checks each file to confirm all are csv and are are valid existing files
   for (let file of fileArr) {
-    if (!checkForCsvExt(file) || !checkFileExists(file)) return false
+    checkForCsvExt(file)
+    checkFileExists(file)
   }
-  // checks if there are duplicate files within fileArr 
-  if (!checkForDuplicates(fileArr)) return false
 
   return true
+
 }
-
-
-// const b1 = "Store1b.csv"
-// const b2 = "Store2b.csv"
-// console.log(isValidFileArray(['intersection.js', 'store.csv'], totalFiles)) // false
-// console.log(isValidFileArray([b1, b2], totalFiles)) // true  
-// console.log(isValidFileArray([b1, b1], totalFiles)) // true  
-// console.log(isValidFileArray([], totalFiles)) // 
-// console.log(isValidFileArray(['isReal', 'testfolder/diff.csv'], totalFiles)) // false
 
 module.exports = {
   isValidFileArray,
-  totalFiles,
   checkforFileArr,
   checkFileCount,
   checkForCsvExt,
