@@ -65,29 +65,11 @@ async function getIntersectionOfArr(fileArray, headerArr,) {
     // takes an array containing a set of user promises
     let intersection = reduceUserSets(fileDataArray)
 
-
     // takes input of set containing strings representing each intersection user and outputs array of user object 
     let final = createUserObject(intersection, headerArr, indexOfAge)
 
     return final
 }
-
-
-
-
-// function getUserIntersection(fileArr, headerArr) {
-
-//     (async () => {
-//         let userInterSection = await getIntersectionOfArr(fileArr, headerArr)
-//         console.log(userInterSection)
-//         return userInterSection
-//     })();
-
-
-// }
-
-
-
 
 
 

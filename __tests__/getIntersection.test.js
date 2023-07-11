@@ -63,7 +63,29 @@ describe('reduceUserSets function', () => {
         expect(t).toThrow('arrayOfUserSets should be an array')
     })
 
-
-
 });
 
+
+describe('getIntersectionOfArr function', () => {
+    const testSet1 = new Set(['Emma, Nguyen,57, Kentucky', 'Noah, Williams,82, South Carolina'])
+    const testSet2 = new Set(['Noah, Williams,82, South Carolina'])
+
+    test('reduceUserSets returns expected array of objects with age as a number type when age index is passed', () => {
+        const testSetArr = [testSet1, testSet2]
+        const result = reduceUserSets(testSetArr)
+        expect(result.size).toBe(1)
+        expect(result.has('Noah, Williams,82, South Carolina')).toBe(true)
+        expect(result.has('Emma, Nguyen,57, Kentucky')).toBe(false)
+    })
+    test('reduceUserSets returns set with same values if only one set is passed', () => {
+        const testSetArr = [testSet2]
+        const result = reduceUserSets(testSetArr)
+        expect(result.size).toBe(1)
+        expect(result.has('Noah, Williams,82, South Carolina')).toBe(true)
+    })
+    test('reduceUserSets throws an error when input is not an array ', () => {
+        const t = () => (reduceUserSets(testSet1, testSet2))
+        expect(t).toThrow('arrayOfUserSets should be an array')
+    })
+
+});
