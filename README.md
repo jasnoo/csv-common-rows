@@ -91,5 +91,3 @@ When `mutualCustomers` is invoked with valid arguments, the function will invoke
 - Using `fs.createReadStream`and `readline.createInterface`, it will read a CSV file line by line
 - The `validateHeader` helper function is invoked on first like of the data to determine if the fields match the expeted headers
 - Subsequent lines will be validated (e.g. no empty fields, remove leading/trailing whitespace) and added to a Set in order to remove repeated rows within a file 
-
-
