@@ -14,16 +14,16 @@ const ageIndex = 2 // index of the "age" field to handle converting ages to numb
 ///////////  Constants for mutualCustomer fuction end ///////////
 
 async function mutualCustomers(fileArr, headerArr = expectedHeaders, fileCount = totalFiles, indexOfAge = ageIndex) {
-    try {
-        if (isValidFileArray(fileArr, fileCount)) {
-            let userInterSection = await getIntersectionOfArr(fileArr, headerArr, indexOfAge)
-            console.log(userInterSection)
-            return userInterSection
-        }
+  try {
+    if (isValidFileArray(fileArr, fileCount)) {
+      let userInterSection = await getIntersectionOfArr(fileArr, headerArr, indexOfAge)
+      console.log(userInterSection)
+      return userInterSection
     }
-    catch (err) {
-        throw err
-    }
+  }
+  catch (err) {
+    throw err
+  }
 }
 
 
@@ -32,8 +32,8 @@ mutualCustomers(allCSVFileArray)
 
 
 module.exports = {
-    mutualCustomers,
-    totalFiles,
-    expectedHeaders,
-    ageIndex
+  mutualCustomers,
+  totalFiles,
+  expectedHeaders,
+  ageIndex
 }
