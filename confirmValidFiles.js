@@ -30,7 +30,7 @@ function checkFileCount(fileArray, expectedCount) {
 function checkForCsvExt(file) {
   if (file === undefined) { throw new Error('File is undefined') }
   if (typeof file !== 'string' || path.extname(file) !== '.csv') {
-    throw new Error('File is not a CSV')
+    throw new Error(`${file} is not a CSV`)
   }
   else return true
 }
@@ -40,7 +40,7 @@ function checkFileExists(file) {
   if (typeof file !== 'string' || !file) {
     throw new Error('File argument should be a string')
   } else if (!fs.existsSync(file)) {
-    throw new Error(`File does not exist`);
+    throw new Error(`File does not exist at ${file}`);
   } else return true
 }
 

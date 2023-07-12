@@ -21,7 +21,8 @@ function validateHeader(rowArr, expectedHeaders) {
 // Checks if all elements in rowArr have valid values (non-empty strings except age which should be able to parse into a number >=0))
 function rowHasValidFields(rowArr, indexOfAge) {
 
-  if (!rowArr || !Array.isArray(rowArr) || (typeof indexOfAge !== 'number')) return false
+  if (!rowArr || !Array.isArray(rowArr)) return false
+  if (indexOfAge !== undefined && (typeof indexOfAge !== 'number')) return false
   let isValid = true
   rowArr.forEach((value, i) => {
 

@@ -1,5 +1,4 @@
-const { readCsvFile, headers, headerLength, indexOfAge } = require('./convertCSVdata')
-const fs = require("fs");
+const { readCsvFile } = require('./convertCSVdata')
 
 /////////// Helper functions for getIntersectionOfArr function begin /////////// 
 
@@ -51,16 +50,13 @@ function reduceUserSets(arrayOfUserSets) {
 async function getIntersectionOfArr(fileArray, headerArr, indexOfAge) {
 
   // creates an array of sets where each invdividual set is the   
-  let fileDataArray = await Promise.all(fileArray.map(file => readCsvFile(file, headerArr, indexOfAge)))
+  let setArray = await Promise.all(fileArray.map(file => readCsvFile(file, headerArr, indexOfAge)))
   // takes an array containing a set of user promises
-  let intersection = reduceUserSets(fileDataArray)
+  let intersection = reduceUserSets(setArray)
   // takes input of set containing strings representing each intersection user and outputs array of user object 
-  let final = createUserObject(intersection, headerArr, indexOfAge)
-  console.log('final', final)
-
-  return final
+  let userArray = createUserObject(intersection, headerArr, indexOfAge)
+  return userArray
 }
-
 
 
 module.exports = { createUserObject, reduceUserSets, getIntersectionOfArr }

@@ -1,6 +1,6 @@
 {
   "scripts": {
-        "testc": "jest --coverage",
+        "test-coverage": "jest --coverage",
         "test": "jest"
     },
 

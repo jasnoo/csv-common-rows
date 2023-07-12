@@ -1,4 +1,4 @@
-const { checkforFileArr, checkFileCount, checkForCsvExt, checkFileExists, checkForNoDuplicates, isValidFileArray } = require("../confirmValidFiles");
+const { checkforFileArr, checkFileCount, checkForCsvExt, checkFileExists, isValidFileArray, checkForNoDuplicates } = require("../confirmValidFiles");
 
 describe('checkforFileArr function', () => {
 
@@ -72,12 +72,13 @@ describe('checkForCsvExt function', () => {
 
   test('checkForCsvExt throws an error when file extension is not .csv', () => {
     const t = () => checkForCsvExt(invalidCsV)
-    expect(t).toThrow(`File is not a CSV`)
+    expect(t).toThrow(`${invalidCsV} is not a CSV`)
   })
 
   test('checkForCsvExt throws an error when argument is not a string', () => {
-    const t = () => checkForCsvExt([store])
-    expect(t).toThrow('File is not a CSV')
+    const notAString = [store]
+    const t = () => checkForCsvExt(notAString)
+    expect(t).toThrow(`${notAString} is not a CSV`)
   })
 
   test('checkForCsvExt returns true when file extension is .csv', () => {
@@ -102,7 +103,7 @@ describe('checkFileExists function', () => {
 
   test('checkFileExists throws an error when fs.existsSync returns false', () => {
     const t = () => checkFileExists(invalidCsV)
-    expect(t).toThrow('File does not exist')
+    expect(t).toThrow(`File does not exist at ${invalidCsV}`)
   })
 
   test('checkFileExists throws an error when fs.existsSync returns false', () => {
@@ -163,7 +164,7 @@ describe('isValidFileArray function', () => {
     const fileArr = [store1, store4]
     const expectedCount = 2
     const t = () => isValidFileArray(fileArr, expectedCount)
-    expect(t).toThrow('File is not a CSV')
+    expect(t).toThrow(`${store4} is not a CSV`)
   })
 
   test('isValidFileArray throws error when file array has file duplicates', () => {

@@ -1,4 +1,4 @@
-﻿First Name,Last Name,Age,State
+﻿First Name,Last Name,Cool,State
 Sophia,Smith,28,Hawaii
 Emma,Nguyen,57,Kentucky
 Noah,Williams,82,South Carolina
@@ -103,6 +103,3 @@ Isaac,Harvey,52,South Carolina
 ,,66,
 ,,18,
 ,,,
-,Jacobs,,Alaska
-,Suarez,,Alaska
-,Nunez,,Alaska

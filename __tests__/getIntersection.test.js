@@ -60,7 +60,6 @@ describe('reduceUserSets function', () => {
     })
 });
 
-
 describe('getIntersectionOfArr function', () => {
 
     const store1 = './testCSV/TestStore1.csv'
