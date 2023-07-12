@@ -71,5 +71,4 @@ describe('getIntersectionOfArr function', () => {
     expect(result[0]).toEqual({ "First Name": "noah", "Last Name": "williams", "Age": 82, "State": "south carolina" })
     expect(result[1]).toEqual({ "First Name": "olivia", "Last Name": "johnson", "Age": 45, "State": "utah" })
   })
-
 });
