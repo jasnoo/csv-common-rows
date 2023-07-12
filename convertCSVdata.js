@@ -1,17 +1,9 @@
 const fs = require("fs");
 const readline = require("readline");
 
-const b1 = "Store1b.csv"
-const b2 = "Store2b.csv"
+/////////// Helper functions for readCsvFile function begin ///////////
 
-
-//////////////////////////////////////////////// HELPER FUNCTIONS //////////////////////////////////////////////// 
-
-// function splitRowString(rowString) {
-//   return (typeof rowString === 'string') ? rowString.split(',') : false;
-// }
-
-// check if its a header
+// Compares elements in rowArr to expectedHeaders array to see if rowArr is a header row (if the rowArr has matching elements)
 function validateHeader(rowArr, expectedHeaders) {
   if (!rowArr || !expectedHeaders) return false
   if (!Array.isArray(rowArr)) return false
@@ -25,12 +17,14 @@ function validateHeader(rowArr, expectedHeaders) {
   return hasValidHeaders;
 }
 
-
-// check if each individual row has appropriate number/string data included
+// Checks if all elements in rowArr have valid values (non-empty strings except age which should be able to parse into a number >=0))
 function rowHasValidFields(rowArr, indexOfAge) {
-  if (!rowArr || !Array.isArray(rowArr) || (typeof indexOfAge !== 'number')) return false
+
+  if (!rowArr || !Array.isArray(rowArr)) return false
+  if (indexOfAge !== undefined && (typeof indexOfAge !== 'number')) return false
   let isValid = true
   rowArr.forEach((value, i) => {
+
     rowArr[i] = rowArr[i].trim()
     if (i === indexOfAge) {
       if (!rowArr[i]) {
@@ -43,46 +37,39 @@ function rowHasValidFields(rowArr, indexOfAge) {
     } else if (!!value === false) {
       isValid = false
     }
+
   })
   return isValid
 }
 
+/////////// Helper functions for readCsvFile function end /////////// 
 
 
-
-
-
-//////////////////////////////////////////////// HELPER FUNCTIONS //////////////////////////////////////////////// 
-
-
-
-const headers = ["First Name", "Last Name", "Age", "State"]
-const headerLength = headers.length
-const indexOfAge = headers.indexOf("Age")
-
-
-async function readCsvFile(filePath, headerArr) {
+// readCsvFile takes a single CSV filepath and return set of valid rows as strings from csv   
+async function readCsvFile(filePath, headerArr, indexOfAge) {
   const dataSet = new Set();
 
   return new Promise((resolve, reject) => {
-    let checkedForHeader = false
     const csvStream = fs.createReadStream(filePath);
     const rl = readline.createInterface({ input: csvStream })
+    let checkedForHeader = false // flag to see if header has been checked for in file
 
     rl.on('line', (row) => {
-
       let tempLineArr = row.split(',')
-      // it will check for header conditions, since this starts at false it should start for the first line
 
+      // if header hasn't been checked for, check to see if it's a valid header
       if (!checkedForHeader) {
         if (!validateHeader(tempLineArr, headerArr)) {
           reject(new Error(`Headers are invalid for ${filePath}`))
         }
         checkedForHeader = true;
-      }
-      //if row has same # of fields as header and if row values are valid
-      if ((tempLineArr.length === headerLength) && (rowHasValidFields(tempLineArr, indexOfAge))) {
-        dataSet.add(tempLineArr.join(",").toLowerCase())
+
+        // when header has already been checked for so these are user rows
+      } else {
+        //adds data to set if row has same # of fields as header and if row values are valid
+        if ((tempLineArr.length === headerArr.length) && (rowHasValidFields(tempLineArr, indexOfAge))) {
+          dataSet.add(tempLineArr.join(",").toLowerCase())
+        }
       }
     })
 
@@ -96,86 +83,9 @@ async function readCsvFile(filePath, headerArr) {
   })
 }
 
-
-
-
-
-
-
 module.exports = {
   readCsvFile,
-  headers,
-  headerLength,
-  indexOfAge,
   validateHeader,
   rowHasValidFields,
-
-
 }
 
-
-
-
-
-/*
-const readCsvFile = async (filePath, headerArr) => new Promise((resolve, reject) => {
-    let checkedForHeader = false
-    let isValidFile = true
-
-    const dataSet = new Set();
-
-    const csvStream = fs.createReadStream(filePath);
-    const rl = readline.createInterface({ input: csvStream })
-
-    rl.on('line', (row) => {
-        if (!isValidFile) {
-            rl.close()
-            throw `Invalid file at ${filePath}`
-        } else {
-            let isValidLine = true;
-            let tempLineArr = row.split(',')
-            // it will check for header conditions, since this starts at false it should start for the first line
-
-            if (!checkedForHeader) {
-                if (!validateHeader(tempLineArr, headerArr)) {
-                    isValidFile = false;
-                    rl.close();
-                }
-                checkedForHeader = true;
-            }
-
-
-            //if row has different # of fields than header or if row values are invalid
-            if ((tempLineArr.length !== headerLength) || (!rowHasValidFields(tempLineArr))) {
-                isValidLine = false;
-            }
-            if (isValidLine) {
-                dataSet.add(tempLineArr.join(",").toLowerCase())
-            }
-        }
-
-        // conditions that mean the line is invalid
-
-    })
-
-    rl.on('error', function (err) {
-        reject(err)
-    });
-
-    rl.on("close", () => {
-        // console.log(dataSet)
-        csvStream.destroy();
-        resolve(dataSet)
-    })
-})
-// let answer = readCsvFile(b1, headers)
-
-// console.log(answer)
-
-// (async () => {
-//     let answer = await readCsvFile(b1, headers)
-//     console.log("this is my answer:", answer)
-
-//     // console.log('intersectionOfUsers:', intersectionOfUsers)
-// })();
-*/
