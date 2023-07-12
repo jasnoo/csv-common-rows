@@ -46,9 +46,9 @@ describe('rowHasValidFields', () => {
     expect(rowHasValidFields(rowString, ageIndex)).toBe(false)
   })
 
-  // test('rowHasValidFields returns false when age index is undefined', () => {
-  expect(rowHasValidFields(testRow, 'three')).toBe(false)
-  // })
+  test('rowHasValidFields returns false when age index is undefined', () => {
+    expect(rowHasValidFields(testRow, 'three')).toBe(false)
+  })
 
   test('rowHasValidFields returns false when no row array is passed', () => {
     expect(rowHasValidFields(ageIndex)).toBe(false)

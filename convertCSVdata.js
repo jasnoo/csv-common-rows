@@ -1,7 +1,6 @@
 const fs = require("fs");
 const readline = require("readline");
 
-
 /////////// Helper functions for readCsvFile function begin ///////////
 
 // Compares elements in rowArr to expectedHeaders array to see if rowArr is a header row (if the rowArr has matching elements)
