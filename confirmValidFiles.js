@@ -57,7 +57,6 @@ function checkForNoDuplicates(fileArray) {
 
 /////////// Helper functions for isValidFileArray function end ///////////
 
-
 // isValidFileArray checks for valid files before reading through them line by line
 // If a file is invalid, it will throw error in respective helper function
 function isValidFileArray(fileArr, fileCount) {

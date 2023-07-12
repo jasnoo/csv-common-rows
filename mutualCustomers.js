@@ -26,10 +26,7 @@ async function mutualCustomers(fileArr, headerArr = expectedHeaders, fileCount =
   }
 }
 
-
 mutualCustomers(allCSVFileArray)
-
-
 
 module.exports = {
   mutualCustomers,
